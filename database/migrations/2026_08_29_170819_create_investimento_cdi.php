@@ -21,6 +21,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('nome', 100)->index();
             $table->decimal('valor', 8, 2);
+            $table->integer('valor_cdi');
             $table->string('descricao', 255)->nullable();
             $table->timestamps();
         });

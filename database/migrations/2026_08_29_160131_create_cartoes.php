@@ -21,8 +21,7 @@ return new class extends Migration
                 ->constrained('bancos')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->string('nome', 50)
-                ->index();
+            $table->integer('numero')->index();
             $table->decimal('limite', 10, 2);
             $table->string('banceira')->nullable();
             $table->boolean('cartao_principal')->nullable();
