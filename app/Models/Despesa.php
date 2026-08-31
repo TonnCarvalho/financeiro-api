@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'id_grupo_despesa',
     'nome',
     'valor',
-    'tipo_despesa',
+    'tipo',
     'data',
     'paga',
     'descricao',

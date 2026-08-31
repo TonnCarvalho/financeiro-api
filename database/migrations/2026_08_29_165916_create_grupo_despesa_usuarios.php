@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grupo_usuarios', function (Blueprint $table) {
+        Schema::create('grupo_despesa_usuarios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_grupo')
-                ->constrained('grupos')
-                ->cascadeOnDelete();
             $table->foreignId('id_usuario')
                 ->constrained('usuarios')
+                ->cascadeOnDelete();
+            $table->foreignId('id_grupo_despesa')
+                ->constrained('grupo_despesas')
                 ->cascadeOnDelete();
             $table->enum('permisao_usuario', ['admin', 'membro'])
                 ->default('membro');
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grupo_usuarios');
+        Schema::dropIfExists('grupo_despesa_usuarios');
     }
 };
