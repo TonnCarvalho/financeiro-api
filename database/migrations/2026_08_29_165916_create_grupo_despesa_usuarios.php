@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('id_grupo_despesa')
                 ->constrained('grupo_despesas')
                 ->cascadeOnDelete();
-            $table->enum('permisao_usuario', ['admin', 'membro'])
+            $table->enum('permissao_usuario', ['admin', 'membro'])
                 ->default('membro');
             $table->timestamps();
         });
