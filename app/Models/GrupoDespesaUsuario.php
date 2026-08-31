@@ -7,26 +7,23 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Table('receitas')]
+#[Table('grupo_despesa_usuarios')]
 
 #[Fillable([
     'id_usuario',
-    'id_banco',
-    'valor',
-    'data',
-    'recorrente',
-    'descricao',
+    'id_grupo',
+    'permissao_usuario',
 ])]
-class Receita extends Model
+
+class GrupoDespesaUsuario extends Model
 {
-    public function usuario():BelongsTo
+    public function usuario(): BelongsTo
     {
         return $this->belongsTo(Usuario::class, 'id_usuario');
-    }    
-
-    public function banco():BelongsTo
-    {
-        return $this->belongsTo(Banco::class, 'id_banco');
     }
 
+    public function grupo_despesa(): BelongsTo
+    {
+        return $this->belongsTo(GrupoDespesa::class, 'id_grupo_despesa');
+    }
 }

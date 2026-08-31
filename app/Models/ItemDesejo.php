@@ -6,27 +6,26 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Table('receitas')]
+#[Table('item_desejo')]
 
 #[Fillable([
     'id_usuario',
-    'id_banco',
+    'nome',
+    'imagem',
     'valor',
-    'data',
-    'recorrente',
-    'descricao',
+    'link',
 ])]
-class Receita extends Model
+class ItemDesejo extends Model
 {
-    public function usuario():BelongsTo
-    {
+    public function usuario(): BelongsTo
+    { 
         return $this->belongsTo(Usuario::class, 'id_usuario');
-    }    
-
-    public function banco():BelongsTo
-    {
-        return $this->belongsTo(Banco::class, 'id_banco');
     }
 
+    public function grupoDesejo(): HasMany
+    {
+        return $this->hasMany(GrupoDesejo::class, 'id_item_desejo');
+    }
 }
