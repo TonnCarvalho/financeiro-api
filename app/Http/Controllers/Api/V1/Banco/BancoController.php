@@ -7,6 +7,7 @@ use App\Http\Requests\BancoStoreRequest;
 use App\Models\Banco;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class BancoController extends Controller
 {
@@ -33,7 +34,21 @@ class BancoController extends Controller
      */
     public function store(BancoStoreRequest $request): JsonResponse
     {
-        $banco = Banco::create($request->validated());
+        $arquivo = $request->file('caminho_avatar');
+
+        $extensao = $arquivo->extension();
+
+        $dados = $request->safe()->except('caminho_avatar');
+
+        $nomeImagem = Str::lower($dados['nome']).'.'.$extensao;
+
+        $dados['caminho_avatar'] = $arquivo->storeAs(
+            'imagens/bancos',
+            "$nomeImagem",
+            'public'
+        );
+
+        $banco = Banco::create($dados);
 
         return response()->json([
             'success' => true,

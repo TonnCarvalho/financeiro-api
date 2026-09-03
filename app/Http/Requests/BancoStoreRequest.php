@@ -25,7 +25,7 @@ class BancoStoreRequest extends FormRequest
         return [
             'id_usuario' => ['required', 'integer', Rule::unique('bancos', 'nome')],
             'nome' => ['required', 'string', 'max:50'],
-            'caminho_avatar' => ['nullable', 'max:50'],
+            'caminho_avatar' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp','max:2048'],
         ];
     }
 
