@@ -35,14 +35,6 @@ class BancoController extends Controller
         );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     public function store(
         BancoStoreRequest $request,
         BancoStoreService $bancoStoreService,
@@ -74,15 +66,6 @@ class BancoController extends Controller
             $banco
         );
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      */
