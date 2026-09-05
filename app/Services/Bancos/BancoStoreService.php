@@ -4,6 +4,7 @@ namespace App\Services\Bancos;
 
 use App\Http\Requests\BancoStoreRequest;
 use App\Models\Banco;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class BancoStoreService
@@ -15,6 +16,8 @@ class BancoStoreService
         $extensao = Str::lower($arquivo->extension());
 
         $dados = $request->except('caminho_avatar');
+
+        $dados['id_usuario'] = Auth::user()->id;
 
         $nomeImagem = Str::slug($dados['nome']);
 
