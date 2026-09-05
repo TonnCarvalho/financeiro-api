@@ -4,22 +4,36 @@ namespace App\Http\Controllers\Api\V1\Banco;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BancoStoreRequest;
+use App\Models\Banco;
 use App\Services\Bancos\BancoStoreService;
 use App\Traits\HttpResponsesTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BancoController extends Controller
 {
     use HttpResponsesTrait;
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(Banco $banco)
     {
-        return response()->json([
-            'success' => true,
-        ]);
+        $bancos = $banco
+            ->where('id_usuario', Auth::user()->id)
+            ->get();
+
+        if ($bancos->isEmpty()) {
+            return $this->error(
+                'Bancos não encontrados',
+                200,
+                $bancos
+            );
+        }
+
+        return $this->response(
+            'Bancos encontrados com sucesso',
+            200,
+            $bancos
+        );
     }
 
     /**
@@ -30,9 +44,6 @@ class BancoController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(
         BancoStoreRequest $request,
         BancoStoreService $bancoStoreService,
