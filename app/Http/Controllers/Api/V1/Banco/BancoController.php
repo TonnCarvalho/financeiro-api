@@ -49,9 +49,9 @@ class BancoController extends Controller
         );
     }
 
-    public function show(string $id): JsonResponse
+    public function show(Banco $banco): JsonResponse
     {
-        $banco = Banco::where('id', $id)
+        $banco = Banco::where($banco)
             ->get();
 
         if ($banco->isEmpty()) {
@@ -77,9 +77,9 @@ class BancoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Banco $banco)
     {
-        $bancoExcluido = Banco::destroy($id);
+        $bancoExcluido = $banco->delete();
 
         if ($bancoExcluido === 0) {
             return $this->error(
