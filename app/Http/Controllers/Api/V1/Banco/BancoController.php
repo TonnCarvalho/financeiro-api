@@ -23,7 +23,7 @@ class BancoController extends Controller
         if ($bancos->isEmpty()) {
             return $this->error(
                 'Bancos não encontrados',
-                200,
+                404,
                 $bancos
             );
         }
@@ -57,7 +57,7 @@ class BancoController extends Controller
         if ($banco->isEmpty()) {
             return $this->error(
                 "Banco não encontrado",
-                200,
+                404,
             );
         }
         return $this->response(
@@ -79,6 +79,18 @@ class BancoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $bancoExcluido = Banco::destroy($id);
+
+        if ($bancoExcluido === 0) {
+            return $this->error(
+                'Banco não encontrado',
+                404
+            );
+        }
+
+        return $this->response(
+            'Banco deletado com sucesso',
+            200,
+        );
     }
 }

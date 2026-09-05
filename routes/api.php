@@ -22,6 +22,5 @@ Route::prefix('/v1')
         });
 
         Route::resource('banco', BancoController::class)
-        ->except(['create', 'edit']);
-
+            ->except(['create', 'edit']);
     });
