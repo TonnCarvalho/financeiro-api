@@ -15,10 +15,9 @@ class BancoController extends Controller
 {
     use HttpResponsesTrait;
 
-    public function index(Banco $banco)
+    public function index()
     {
-        $bancos = $banco
-            ->where('id_usuario', Auth::user()->id)
+        $bancos = Banco::where('id_usuario', Auth::user()->id)
             ->get();
 
         if ($bancos->isEmpty()) {
@@ -58,12 +57,22 @@ class BancoController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
-        //
+        $banco = Banco::where('id', $id)
+            ->get();
+
+        if ($banco->isEmpty()) {
+            return $this->error(
+                "Banco não encontrado",
+                200,
+            );
+        }
+        return $this->response(
+            "Banco encontrado com sucesso",
+            200,
+            $banco
+        );
     }
 
     /**
