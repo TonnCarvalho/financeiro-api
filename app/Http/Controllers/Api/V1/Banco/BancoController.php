@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Api\V1\Banco;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BancoStoreRequest;
+use App\Http\Requests\Bancos\BancoStoreRequest;
+use App\Http\Requests\Bancos\BancoUpdateRequest;
 use App\Models\Banco;
 use App\Services\Bancos\BancoStoreService;
+use App\Services\Bancos\BancoUpdateService;
+use App\Traits\ExcluirArquivoTrait;
 use App\Traits\HttpResponsesTrait;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class BancoController extends Controller
 {
     use HttpResponsesTrait;
+    use ExcluirArquivoTrait;
 
     public function index()
     {
@@ -40,12 +44,12 @@ class BancoController extends Controller
         BancoStoreService $bancoStoreService,
     ): JsonResponse {
 
-        $banco = $bancoStoreService->store($request);
+        $bancoCriado = $bancoStoreService->store($request);
 
         return $this->response(
             'Banco criado com sucesso.',
             201,
-            $banco
+            $bancoCriado
         );
     }
 
@@ -53,32 +57,71 @@ class BancoController extends Controller
     {
         $banco = Banco::find($id);
 
+        $autorizacao = Gate::inspect('view', $banco);
+
+        if ($autorizacao->denied()) {
+            return $this->error(
+                $autorizacao->message(),
+                403
+            );
+        }
+
         if (!$banco) {
             return $this->error(
                 "Banco não encontrado",
                 404,
             );
         }
-        
+
         return $this->response(
             "Banco encontrado com sucesso",
             200,
             $banco
         );
     }
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+
+    public function update(
+        BancoUpdateRequest $request,
+        BancoUpdateService $bancoUpdateService,
+        string $id
+    ) {
+        $banco = Banco::find($id);
+
+        $autorizacao = Gate::inspect('update', $banco);
+
+        if ($autorizacao->denied()) {
+            return $this->error(
+                $autorizacao->message(),
+                403
+            );
+        }
+        $bancoAtualizado = $bancoUpdateService->update($request, $id);
+
+        return $this->response(
+            'Banco atualizado com sucesso.',
+            200,
+            $bancoAtualizado
+        );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Banco $banco)
     {
+        $autorizacao = Gate::inspect('delete', $banco);
+
+        if ($autorizacao->denied()) {
+            return $this->error(
+                $autorizacao->message(),
+                403
+            );
+        }
+
+        $caminhoImagem = $banco->caminho_avatar;
+
+        if ($caminhoImagem) {
+            $this->exluirArquivo($caminhoImagem);
+        }
+
         $bancoExcluido = $banco->delete();
 
         if ($bancoExcluido === 0) {

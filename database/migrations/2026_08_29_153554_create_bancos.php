@@ -17,7 +17,7 @@ return new class extends Migration
                 ->constrained('usuarios', 'id')
                 ->cascadeOnDelete();
             $table->string('nome', '50')->index();
-            $table->string('caminho_avatar', '50')->nullable()->index();
+            $table->string('caminho_avatar', '255')->nullable()->index();
             $table->boolean('ativo')->default(true);
             $table->timestamps();
         });

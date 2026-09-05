@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Bancos;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -18,14 +18,27 @@ class BancoStoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array
      */
     public function rules(): array
     {
         return [
-            'id_usuario' => ['required', 'integer', Rule::unique('bancos', 'nome')],
-            'nome' => ['required', 'string', 'max:50'],
-            'caminho_avatar' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp','max:2048'],
+            'id_usuario' => [
+                'required',
+                'integer',
+                Rule::unique('bancos', 'nome')
+            ],
+            'nome' => [
+                'required',
+                'string',
+                'max:50'
+            ],
+            'caminho_avatar' => [
+                'nullable',
+                'image',
+                'mimes:png,jpg,jpeg,webp',
+                'max:2048'
+            ],
         ];
     }
 
@@ -38,4 +51,3 @@ class BancoStoreRequest extends FormRequest
         ];
     }
 }
-
