@@ -11,7 +11,7 @@ trait ExcluirArquivoTrait
 
     public function exluirArquivo(string $caminho): JsonResponse
     {
-        if (!Storage::exists($caminho)) {
+        if (!Storage::disk('public')->exists($caminho)) {
             return $this->response(
                 'Caminho do arquivo não existe',
                 200,

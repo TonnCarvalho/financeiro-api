@@ -20,9 +20,11 @@ class BancoStoreService
 
     private function cadastraSemImagem(object $request): Banco
     {
-        $dados = $request->except('caminho_avatar');
+        $dados = $request->safe()->except('caminho_avatar');
 
         $dados['id_usuario'] = Auth::user()->id;
+
+        $dados['nome'] = Str::ucfirst($dados['nome']);
 
         return Banco::create($dados);
     }
@@ -33,11 +35,13 @@ class BancoStoreService
 
         $extensao = Str::lower($imagem->extension());
 
-        $dados = $request->except('caminho_avatar');
+        $dados = $request->safe()->except('caminho_avatar');
 
         $dados['id_usuario'] = Auth::user()->id;
 
-        $nomeImagem = Str::slug($dados['nome']);
+        $dados['nome'] = Str::ucfirst($dados['nome']);
+
+        $nomeImagem = Str::uuid();
 
         $path = 'imagens/bancos';
 
