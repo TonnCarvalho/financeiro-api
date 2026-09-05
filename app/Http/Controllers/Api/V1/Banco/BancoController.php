@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api\V1\Banco;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BancoStoreRequest;
-use App\Models\Banco;
+use App\Services\Bancos\BancoStoreService;
+use App\Traits\HttpResponsesTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class BancoController extends Controller
 {
+    use HttpResponsesTrait;
     /**
      * Display a listing of the resource.
      */
@@ -32,29 +33,18 @@ class BancoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(BancoStoreRequest $request): JsonResponse
-    {
-        $arquivo = $request->file('caminho_avatar');
+    public function store(
+        BancoStoreRequest $request,
+        BancoStoreService $bancoStoreService,
+    ): JsonResponse {
 
-        $extensao = $arquivo->extension();
+        $banco = $bancoStoreService->store($request);
 
-        $dados = $request->safe()->except('caminho_avatar');
-
-        $nomeImagem = Str::lower($dados['nome']).'.'.$extensao;
-
-        $dados['caminho_avatar'] = $arquivo->storeAs(
-            'imagens/bancos',
-            "$nomeImagem",
-            'public'
+        return $this->response(
+            'Banco criado com sucesso.',
+            201,
+            $banco
         );
-
-        $banco = Banco::create($dados);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Banco criado com sucesso.',
-            'data' => $banco,
-        ], 201);
     }
 
     /**
