@@ -49,17 +49,17 @@ class BancoController extends Controller
         );
     }
 
-    public function show(Banco $banco): JsonResponse
+    public function show(string $id): JsonResponse
     {
-        $banco = Banco::where($banco)
-            ->get();
+        $banco = Banco::find($id);
 
-        if ($banco->isEmpty()) {
+        if (!$banco) {
             return $this->error(
                 "Banco não encontrado",
                 404,
             );
         }
+        
         return $this->response(
             "Banco encontrado com sucesso",
             200,
