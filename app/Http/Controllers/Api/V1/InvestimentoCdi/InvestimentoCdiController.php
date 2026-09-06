@@ -10,30 +10,49 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class InvestimentoCdiController extends Controller
 {
     use HttpResponsesTrait;
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        $dados = InvestimentoCdi::query()
+            ->select([
+                'id',
+                'id_usuario',
+                'id_banco',
+                'nome',
+                'valor',
+                'valor_cdi',
+                'created_at',
+            ])
+            ->where('id_usuario', Auth::user()->id)
+            ->with([
+                'banco' => function ($q) {
+                    $q->select([
+                        'id',
+                        'nome',
+                        'caminho_avatar'
+                    ]);
+                }
+            ])
+            ->get();
+
+        if ($dados->isEmpty()) {
+            return $this->error(
+                'Investimentos não encontrados',
+                404
+            );
+        }
+
+        return $this->response(
+            'Investimentos encontrados com sucesso',
+            200,
+            $dados
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(InvestimentoCdiStoreRequest $request)
     {
         $dados = $request->validated();
@@ -49,25 +68,11 @@ class InvestimentoCdiController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
@@ -83,7 +88,7 @@ class InvestimentoCdiController extends Controller
                 403
             );
         }
-    
+
         $nomeInvestimento = $investimentoCdi->nome;
 
         $investimentoCdi->delete();

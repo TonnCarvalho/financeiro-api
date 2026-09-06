@@ -5,13 +5,10 @@ namespace App\Policies;
 use App\Models\InvestimentoCdi;
 use App\Models\Usuario;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Http\JsonResponse;
 
 class InvestimentoCdiPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
+
     public function viewAny(Usuario $usuario): bool
     {
         return false;
