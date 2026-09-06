@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InvestimentoCdi\InvestimentoCdiStoreRequest;
 use App\Models\InvestimentoCdi;
 use App\Traits\HttpResponsesTrait;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class InvestimentoCdiController extends Controller
 {
@@ -70,11 +73,27 @@ class InvestimentoCdiController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(InvestimentoCdi $investimentoCdi): JsonResponse
     {
-        //
+        $autorizacao = Gate::inspect('delete', $investimentoCdi);
+
+        if ($autorizacao->denied()) {
+            return $this->error(
+                $autorizacao->message(),
+                403
+            );
+        }
+    
+        $nomeInvestimento = $investimentoCdi->nome;
+
+        $investimentoCdi->delete();
+
+        return $this->response(
+            "Investimento {$nomeInvestimento} apagado com sucesso",
+            200,
+            [
+                'nomeInvestimento' => $nomeInvestimento
+            ],
+        );
     }
 }

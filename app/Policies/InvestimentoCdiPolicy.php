@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\InvestimentoCdi;
 use App\Models\Usuario;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Http\JsonResponse;
 
 class InvestimentoCdiPolicy
 {
@@ -16,51 +17,25 @@ class InvestimentoCdiPolicy
         return false;
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(Usuario $usuario, InvestimentoCdi $investimentoCdi): bool
+    public function view(Usuario $usuario, InvestimentoCdi $investimentoCdi): Response
     {
-        return false;
+        return $this->verificaPermissaoPorId($usuario, $investimentoCdi);
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(Usuario $usuario): bool
+    public function update(Usuario $usuario, InvestimentoCdi $investimentoCdi): Response
     {
-        return false;
+        return $this->verificaPermissaoPorId($usuario, $investimentoCdi);
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(Usuario $usuario, InvestimentoCdi $investimentoCdi): bool
+    public function delete(Usuario $usuario, InvestimentoCdi $investimentoCdi): Response
     {
-        return false;
+        return $this->verificaPermissaoPorId($usuario, $investimentoCdi);
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(Usuario $usuario, InvestimentoCdi $investimentoCdi): bool
+    private function verificaPermissaoPorId(Usuario $usuario, InvestimentoCdi $investimentoCdi): Response
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(Usuario $usuario, InvestimentoCdi $investimentoCdi): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(Usuario $usuario, InvestimentoCdi $investimentoCdi): bool
-    {
-        return false;
+        return $usuario->id === $investimentoCdi->id_usuario
+            ? Response::allow()
+            : Response::deny('Não autorizario');
     }
 }
