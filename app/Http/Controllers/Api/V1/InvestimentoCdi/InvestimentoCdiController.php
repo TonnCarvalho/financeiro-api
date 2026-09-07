@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InvestimentoCdi\InvestimentoCdiStoreRequest;
 use App\Http\Requests\InvestimentoCdi\InvestimentoCdiUpdateRequest;
 use App\Models\InvestimentoCdi;
+use App\Models\InvestimentoCdiExtrato;
 use App\Traits\HttpResponsesTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -59,12 +60,21 @@ class InvestimentoCdiController extends Controller
 
         $dados['id_usuario'] = Auth::user()->id;
 
-        $investimentoCriado = InvestimentoCdi::create($dados);
+        $investimentoCdiCriado = InvestimentoCdi::create($dados);
+
+        $dadosInvestimentoCdiExtrato = [
+            'id_investimento' => $investimentoCdiCriado->id,
+            'valor_bruto' => $investimentoCdiCriado->valor,
+            'valor_liquido' => $investimentoCdiCriado->valor,
+            'tipo' => 'guardado',
+        ];
+
+        InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);
 
         return $this->response(
             'Investimento criado com sucesso.',
             201,
-            $investimentoCriado
+            $investimentoCdiCriado
         );
     }
 
@@ -74,17 +84,17 @@ class InvestimentoCdiController extends Controller
 
         $autorizacao = Gate::inspect('view', $investimentoCdi);
 
-        if($autorizacao->denied()) {
+        if ($autorizacao->denied()) {
             return $this->error(
                 $autorizacao->message(),
                 404
             );
         }
 
-        if(!$investimentoCdi) {
+        if (!$investimentoCdi) {
             return $this->error(
-            'Investimento não encontrado',
-            404
+                'Investimento não encontrado',
+                404
             );
         }
 
