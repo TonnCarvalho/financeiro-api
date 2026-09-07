@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\Auth\TokenController;
 use App\Http\Controllers\Api\V1\Banco\BancoController;
 use App\Http\Controllers\Api\V1\InvestimentoCdi\InvestimentoCdiController;
+use App\Http\Controllers\Api\V1\InvestimentoCdiExtrato\InvestimentoCdiExtratoController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/v1')->group(function () {
@@ -26,5 +27,11 @@ Route::prefix('/v1')
             ->except(['create', 'edit']);
 
         Route::resource('investimento-cdi', InvestimentoCdiController::class)
+            ->except(['create', 'edit']);
+
+        Route::resource(
+            'investimento-cdi-extrato',
+            InvestimentoCdiExtratoController::class
+        )
             ->except(['create', 'edit']);
     });

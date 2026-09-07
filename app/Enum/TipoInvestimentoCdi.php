@@ -6,7 +6,7 @@ enum TipoInvestimentoCdi: string
 {
     case RENDIMENTO = 'rendimento';
     case GUARDADO = 'guardado';
-    case RESGATADO = 'regatado';
+    case RESGATADO = 'resgatado';
 
     public function label(): string
     {
