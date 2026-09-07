@@ -70,7 +70,29 @@ class InvestimentoCdiController extends Controller
 
     public function show(string $id)
     {
-        //
+        $investimentoCdi = InvestimentoCdi::find($id);
+
+        $autorizacao = Gate::inspect('view', $investimentoCdi);
+
+        if($autorizacao->denied()) {
+            return $this->error(
+                $autorizacao->message(),
+                404
+            );
+        }
+
+        if(!$investimentoCdi) {
+            return $this->error(
+            'Investimento não encontrado',
+            404
+            );
+        }
+
+        return $this->response(
+            'investimento encontrado com sucesso',
+            200,
+            $investimentoCdi
+        );
     }
 
     public function update(InvestimentoCdiUpdateRequest $request, int $id): JsonResponse
@@ -90,13 +112,14 @@ class InvestimentoCdiController extends Controller
 
         $investimentoCdi->update($dados);
 
-        $investimentoCdiAtualizado = InvestimentoCdi::where('id', $id)
-            ->get();
+        $investimentoCdiAtualizado = InvestimentoCdi::find($id);
 
         return $this->response(
             "Investimento atualizado com sucesso",
             200,
-            ['InvestimentoAtualizado' => $investimentoCdiAtualizado]
+            [
+                'InvestimentoAtualizado' => $investimentoCdiAtualizado
+            ]
         );
     }
 
