@@ -19,21 +19,18 @@ class InvestimentoCdiExtratoController extends Controller
     }
 
     public function store(
-    InvestimentoCdiExtratoPolicy $policy,
-    InvestimentoCdiExtratoStoreRequest $request,
-    InvestimentoCdiExtratoService $service,
-    )
-    {
+        InvestimentoCdiExtratoPolicy $policy,
+        InvestimentoCdiExtratoStoreRequest $request,
+        InvestimentoCdiExtratoService $service,
+    ) {
         //autorizacao
 
-        //service envia tipo
-        $service->store($request);
+        $tarefa = $service->store($request);
 
-        //return sucesso
         return $this->response(
             'ok',
             200,
-            [$request->all()]
+            $tarefa
         );
     }
 

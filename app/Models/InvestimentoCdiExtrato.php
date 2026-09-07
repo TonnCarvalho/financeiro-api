@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'id_investimento',
     'valor_bruto',
     'valor_liquido',
-    'ganhos_perdas',
-    'ir_iof',
-    'tipo'
+    'tipo',
+    'renda_bruta',
+    'renda_liquida',
 ])]
 
 class InvestimentoCdiExtrato extends Model

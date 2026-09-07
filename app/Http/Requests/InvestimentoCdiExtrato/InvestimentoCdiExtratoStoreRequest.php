@@ -3,8 +3,8 @@
 namespace App\Http\Requests\InvestimentoCdiExtrato;
 
 use App\Enum\TipoInvestimentoCdi;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Override;
 
@@ -21,11 +21,12 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array
      */
     public function rules(): array
     {
         return [
+            'id_investimento' => ['required', 'integer'],
             'valor_bruto' => ['required', 'decimal:2'],
             'valor_liquido' => ['required', 'decimal:2'],
             'tipo' => ['required', Rule::enum(TipoInvestimentoCdi::class)]
@@ -35,11 +36,20 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
     #[Override]
     protected function prepareForValidation()
     {
-        return parent::prepareForValidation();
+        $valorBruto = $this->formatarValorParaDecimal($this->valor_bruto);
+        $valorLiquido = $this->formatarValorParaDecimal($this->valor_liquido);
+
+        $this->merge([
+            'valor_bruto' => $valorBruto,
+            'valor_liquido' => $valorLiquido
+        ]);
     }
 
-    private function formatarValorParaDecimal()
+    private function formatarValorParaDecimal(string $valor)
     {
-    
+        return Str::of($valor)
+            ->replace('.', '')
+            ->replace(',', '.')
+            ->toString();
     }
 }

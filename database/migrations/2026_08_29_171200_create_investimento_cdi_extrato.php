@@ -18,9 +18,10 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->decimal('valor_bruto', 8, 2);
             $table->decimal('valor_liquido', 8, 2);
-            $table->enum('tipo', ['rendimento', 'guardado', 'resgatado']);
+            $table->enum('tipo_operacao', ['rendimento', 'guardado', 'resgatado']);
             $table->decimal('renda_bruta', 8, 2)->default(0);
             $table->decimal('renda_liquida', 8, 2)->default(0);
+            $table->date('data_operacao');
             $table->timestamps();
         });
     }
