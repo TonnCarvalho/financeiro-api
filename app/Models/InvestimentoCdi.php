@@ -27,6 +27,6 @@ class InvestimentoCdi extends Model
 
     public function banco(): BelongsTo
     {
-        return $this->belongsTo(Usuario::class, 'id_banco');
+        return $this->belongsTo(Banco::class, 'id_banco');
     }
 }

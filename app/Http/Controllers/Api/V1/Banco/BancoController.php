@@ -95,6 +95,7 @@ class BancoController extends Controller
                 403
             );
         }
+        
         $bancoAtualizado = $bancoUpdateService->update($request, $id);
 
         return $this->response(
