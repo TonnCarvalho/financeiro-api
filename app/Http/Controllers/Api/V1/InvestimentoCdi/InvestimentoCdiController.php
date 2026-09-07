@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\V1\InvestimentoCdi;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InvestimentoCdi\InvestimentoCdiStoreRequest;
+use App\Http\Requests\InvestimentoCdi\InvestimentoCdiUpdateRequest;
 use App\Models\InvestimentoCdi;
 use App\Traits\HttpResponsesTrait;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -73,9 +73,31 @@ class InvestimentoCdiController extends Controller
         //
     }
 
-    public function update(Request $request, string $id)
+    public function update(InvestimentoCdiUpdateRequest $request, int $id): JsonResponse
     {
-        //
+        $investimentoCdi = InvestimentoCdi::find($id);
+
+        $autorizacao = Gate::inspect('update', $investimentoCdi);
+
+        if ($autorizacao->denied()) {
+            return $this->error(
+                $autorizacao->message(),
+                404
+            );
+        }
+
+        $dados = $request->validated();
+
+        $investimentoCdi->update($dados);
+
+        $investimentoCdiAtualizado = InvestimentoCdi::where('id', $id)
+            ->get();
+
+        return $this->response(
+            "Investimento atualizado com sucesso",
+            200,
+            ['InvestimentoAtualizado' => $investimentoCdiAtualizado]
+        );
     }
 
     public function destroy(InvestimentoCdi $investimentoCdi): JsonResponse
