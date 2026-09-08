@@ -18,7 +18,7 @@ class InvestimentoCdiExtratoService
 
     public function store(object $request)
     {
-        $tipoOperacao = $request->input('tipo');
+        $tipoOperacao = $request->input('tipo_operacao');
 
         $dadosRequest = $request->safe();
 
@@ -60,13 +60,15 @@ class InvestimentoCdiExtratoService
             'valor_liquido' => $dadosRequest['valor_liquido'],
             'tipo_operacao' => $dadosRequest['tipo_operacao'],
             'renda_bruta' => $this->formatarValorParaDecimal($rendaBruta),
-            'renda_liquida' => $this->formatarValorParaDecimal($rendaLiquida)
+            'renda_liquida' => $this->formatarValorParaDecimal($rendaLiquida),
+            'data_operacao' => $dadosRequest['data_operacao'],
         ];
 
         $investimentoCdi = InvestimentoCdi::find($dadosRequest['id_investimento']);
 
         $investimentoCdi->update([
-            'valor' => $dadosRequest['valor_bruto']
+            'valor_bruto' => $dadosRequest['valor_bruto'],
+            'valor_liquido' => $dadosRequest['valor_liquido'],
         ]);
 
         return InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);

@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests\InvestimentoCdiExtrato;
 
-use App\Enum\TipoInvestimentoCdi;
+use App\Enum\TipoOperacaoInvestimentoCdi;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -29,7 +30,14 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
             'id_investimento' => ['required', 'integer'],
             'valor_bruto' => ['required', 'decimal:2'],
             'valor_liquido' => ['required', 'decimal:2'],
-            'tipo' => ['required', Rule::enum(TipoInvestimentoCdi::class)]
+            'tipo_operacao' => [
+                'required',
+                Rule::enum(TipoOperacaoInvestimentoCdi::class)
+            ],
+            'data_operacao' => [
+                'required',
+                Rule::date()->todayOrBefore()
+            ]
         ];
     }
 
@@ -38,10 +46,12 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
     {
         $valorBruto = $this->formatarValorParaDecimal($this->valor_bruto);
         $valorLiquido = $this->formatarValorParaDecimal($this->valor_liquido);
+        $dataOperacao = $this->formatarData($this->data_operacao);
 
         $this->merge([
             'valor_bruto' => $valorBruto,
-            'valor_liquido' => $valorLiquido
+            'valor_liquido' => $valorLiquido,
+            'data_operacao' => $dataOperacao,
         ]);
     }
 
@@ -51,5 +61,15 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
             ->replace('.', '')
             ->replace(',', '.')
             ->toString();
+    }
+
+    private function formatarData(?string $data)
+    {
+        $dataFormatada = Carbon::createFromFormat(
+            'd/m/Y',
+            $data
+        )->format('Y-m-d');
+
+        return $dataFormatada;
     }
 }
