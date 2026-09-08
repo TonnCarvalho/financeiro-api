@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'valor_liquido',
     'valor_cdi',
     'descricao',
+    'data_operacao',
 ])]
 
 class InvestimentoCdi extends Model

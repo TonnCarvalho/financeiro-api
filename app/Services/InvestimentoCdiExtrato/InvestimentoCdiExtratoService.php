@@ -35,7 +35,7 @@ class InvestimentoCdiExtratoService
     {
         dd('guardado metodo');
     }
-    //TODO colocar a data de criação enviado pelo input
+    
     private function rendimento(object $dadosRequest): InvestimentoCdiExtrato
     {
         $maxValorBruto = InvestimentoCdiExtrato::where(

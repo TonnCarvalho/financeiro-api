@@ -4,6 +4,7 @@ namespace App\Http\Requests\InvestimentoCdi;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Override;
 
 class InvestimentoCdiUpdateRequest extends FormRequest
@@ -30,6 +31,10 @@ class InvestimentoCdiUpdateRequest extends FormRequest
             'valor_liquido' => ['required', 'decimal:2'],
             'valor_cdi' => ['required', 'integer'],
             'descricao' => ['nullable', 'string'],
+            'data_operacao' => [
+                'nullable',
+                Rule::date()->todayOrBefore(),
+            ],
         ];
     }
 

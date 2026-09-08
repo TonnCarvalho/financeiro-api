@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\InvestimentoCdi;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Override;
 
 class InvestimentoCdiStoreRequest extends FormRequest
@@ -29,6 +31,10 @@ class InvestimentoCdiStoreRequest extends FormRequest
             'valor_bruto' => ['required', 'decimal:2'],
             'valor_cdi' => ['required', 'integer'],
             'descricao' => ['nullable', 'string'],
+            'data_operacao' => [
+                'nullable',
+                Rule::date()->todayOrBefore(),
+            ],
         ];
     }
 
@@ -37,9 +43,10 @@ class InvestimentoCdiStoreRequest extends FormRequest
     {
 
         $valor_bruto = $this->formataValorParaDecimal($this->valor_bruto);
-
+        $dataOperacao = $this->formatarData($this->data_operacao);
         $this->merge([
-            'valor_bruto' => $valor_bruto
+            'valor_bruto' => $valor_bruto,
+            'data_operacao' => $dataOperacao,
         ]);
     }
 
@@ -55,5 +62,15 @@ class InvestimentoCdiStoreRequest extends FormRequest
             ->toString();
 
         return $valor;
+    }
+
+    private function formatarData(?string $data)
+    {
+        $dataFormatada = Carbon::createFromFormat(
+            'd/m/Y',
+            $data
+        )->format('Y-m-d');
+
+        return $dataFormatada;
     }
 }
