@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\InvestimentoCdi;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -42,9 +43,10 @@ class InvestimentoCdiUpdateRequest extends FormRequest
     public function prepareForValidation()
     {
         $valor_bruto = $this->formatarValorParaDecimal($this->valor_bruto);
-
+        $dataOperacao = $this->formatarData($this->data_operacao);
         $this->merge([
-            'valor_bruto' => $valor_bruto
+            'valor_bruto' => $valor_bruto,
+            'data_operacao' => $dataOperacao,
         ]);
     }
 
@@ -58,5 +60,15 @@ class InvestimentoCdiUpdateRequest extends FormRequest
             ->replace('.', '')
             ->replace(',', '.')
             ->toString();
+    }
+
+    private function formatarData(?string $data)
+    {
+        $dataFormatada = Carbon::createFromFormat(
+            'd/m/Y',
+            $data
+        )->format('Y-m-d');
+
+        return $dataFormatada;
     }
 }
