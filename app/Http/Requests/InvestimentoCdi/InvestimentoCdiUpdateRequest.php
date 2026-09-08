@@ -26,7 +26,8 @@ class InvestimentoCdiUpdateRequest extends FormRequest
     {
         return [
             'nome' => ['required', 'string', 'max:100'],
-            'valor' => ['required', 'decimal:2'],
+            'valor_bruto' => ['required', 'decimal:2'],
+            'valor_liquido' => ['required', 'decimal:2'],
             'valor_cdi' => ['required', 'integer'],
             'descricao' => ['nullable', 'string'],
         ];
@@ -35,10 +36,10 @@ class InvestimentoCdiUpdateRequest extends FormRequest
     #[Override]
     public function prepareForValidation()
     {
-        $valor = $this->formatarValorParaDecimal($this->valor);
+        $valor_bruto = $this->formatarValorParaDecimal($this->valor_bruto);
 
         $this->merge([
-            'valor' => $valor
+            'valor_bruto' => $valor_bruto
         ]);
     }
 

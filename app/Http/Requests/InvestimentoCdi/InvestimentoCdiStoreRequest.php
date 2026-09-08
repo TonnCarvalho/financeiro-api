@@ -26,7 +26,7 @@ class InvestimentoCdiStoreRequest extends FormRequest
         return [
             'id_banco' => ['required', 'integer'],
             'nome' => ['required', 'string', 'max:100'],
-            'valor' => ['required', 'decimal:2'],
+            'valor_bruto' => ['required', 'decimal:2'],
             'valor_cdi' => ['required', 'integer'],
             'descricao' => ['nullable', 'string'],
         ];
@@ -36,10 +36,10 @@ class InvestimentoCdiStoreRequest extends FormRequest
     protected function prepareForValidation()
     {
 
-        $valor = $this->formataValorParaDecimal($this->valor ?? null);
+        $valor_bruto = $this->formataValorParaDecimal($this->valor_bruto);
 
         $this->merge([
-            'valor' => $valor
+            'valor_bruto' => $valor_bruto
         ]);
     }
 
