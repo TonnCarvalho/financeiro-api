@@ -17,7 +17,7 @@ return new class extends Migration
                 ->constrained('investimento_cdi')
                 ->cascadeOnDelete();
             $table->decimal('valor_bruto', 8, 2);
-            $table->decimal('valor_liquido', 8, 2);
+            $table->decimal('valor_liquido', 8, 2)->default(0);
             $table->enum('tipo_operacao', ['rendimento', 'guardado', 'resgatado']);
             $table->decimal('renda_bruta', 8, 2)->default(0);
             $table->decimal('renda_liquida', 8, 2)->default(0);

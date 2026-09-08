@@ -65,7 +65,6 @@ class InvestimentoCdiController extends Controller
         $dadosInvestimentoCdiExtrato = [
             'id_investimento' => $investimentoCdiCriado->id,
             'valor_bruto' => $investimentoCdiCriado->valor_bruto,
-            'valor_liquido' => $investimentoCdiCriado->valor_bruto,
             'tipo_operacao' => 'guardado',
             'data_operacao' =>$investimentoCdiCriado->data_operacao,
         ];

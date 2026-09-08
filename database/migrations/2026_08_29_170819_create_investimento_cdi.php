@@ -21,7 +21,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('nome', 100)->index();
             $table->decimal('valor_bruto', 8, 2);
-            $table->decimal('valor_liquido', 8, 2)->default(0);
+            $table->decimal('valor_liquido', 8, 2)->default(0.00);
             $table->date('data_operacao');
             $table->integer('valor_cdi');
             $table->string('descricao', 255)->nullable();
