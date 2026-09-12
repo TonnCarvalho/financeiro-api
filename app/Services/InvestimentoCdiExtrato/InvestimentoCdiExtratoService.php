@@ -8,13 +8,6 @@ use Illuminate\Support\Number;
 
 class InvestimentoCdiExtratoService
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
-    {
-        //
-    }
 
     public function store(object $request)
     {
@@ -23,32 +16,28 @@ class InvestimentoCdiExtratoService
         $dadosRequest = $request->safe();
 
         $tarefa = match ($tipoOperacao) {
-            'guardado' => $this->guardado($dadosRequest),
-            'rendimento' => $this->rendimento($dadosRequest),
-            'resgatado' => $this->resgatado($dadosRequest)
+            'guardado' => $this->storeGuardado($dadosRequest),
+            'rendimento' => $this->storeRendimento($dadosRequest),
+            'resgatado' => $this->storeResgatado($dadosRequest)
         };
 
         return $tarefa;
     }
 
-    private function guardado(object $dados)
+    private function storeGuardado(object $dados)
     {
         dd('guardado metodo');
     }
-    
-    private function rendimento(object $dadosRequest): InvestimentoCdiExtrato
-    {
-        $maxValorBruto = InvestimentoCdiExtrato::where(
-            'id_investimento',
-            $dadosRequest['id_investimento']
-        )
-            ->max('valor_bruto');
 
-        $maxValorLiquido = InvestimentoCdiExtrato::where(
-            'id_investimento',
-            $dadosRequest['id_investimento']
-        )
-            ->max('valor_liquido');
+    private function storeRendimento(object $dadosRequest): InvestimentoCdiExtrato
+    {
+        $maxValorBruto = InvestimentoCdi::query()
+            ->where('id', $dadosRequest['id_investimento'])
+            ->value('valor_bruto');
+
+        $maxValorLiquido = InvestimentoCdi::query()
+            ->where('id', $dadosRequest['id_investimento'])
+            ->value('valor_liquido');
 
         $rendaBruta = $dadosRequest['valor_bruto'] - $maxValorBruto;
 
@@ -74,7 +63,7 @@ class InvestimentoCdiExtratoService
         return InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);
     }
 
-    private function resgatado(object $dados)
+    private function storeResgatado(object $dados)
     {
         dd('resgatado metodo');
     }
