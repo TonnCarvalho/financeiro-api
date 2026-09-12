@@ -57,16 +57,16 @@ class InvestimentoCdiController extends Controller
     public function store(InvestimentoCdiStoreRequest $request)
     {
         $dados = $request->validated();
-     
+
         $dados['id_usuario'] = Auth::user()->id;
 
         $investimentoCdiCriado = InvestimentoCdi::create($dados);
 
         $dadosInvestimentoCdiExtrato = [
             'id_investimento' => $investimentoCdiCriado->id,
-            'valor_bruto' => $investimentoCdiCriado->valor_bruto,
             'tipo_operacao' => 'guardado',
-            'data_operacao' =>$investimentoCdiCriado->data_operacao,
+            'valor_operacao' => $investimentoCdiCriado->valor_bruto,
+            'data_operacao' => $investimentoCdiCriado->data_operacao,
         ];
 
         InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);
