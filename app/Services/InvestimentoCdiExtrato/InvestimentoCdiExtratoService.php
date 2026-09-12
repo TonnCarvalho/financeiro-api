@@ -5,6 +5,7 @@ namespace App\Services\InvestimentoCdiExtrato;
 use App\Models\InvestimentoCdi;
 use App\Models\InvestimentoCdiExtrato;
 use Illuminate\Support\Number;
+use InvalidArgumentException;
 
 class InvestimentoCdiExtratoService
 {
@@ -24,24 +25,56 @@ class InvestimentoCdiExtratoService
         return $tarefa;
     }
 
-    private function storeGuardado(object $dados)
+    private function storeGuardado(object $dadosRequest)
     {
-        dd('guardado metodo');
+        $investimentoCdi = InvestimentoCdi::find($dadosRequest['id_investimento']);
+
+        $valorBruto =  $investimentoCdi->valor_bruto;
+        $valorLiquido = $investimentoCdi->valor_liquido;
+
+        $novoValorBruto = $valorBruto + $dadosRequest['valor_operacao'];
+        $novoValorLiquido = $valorLiquido + $dadosRequest['valor_operacao'];
+
+        $investimentoCdi->update([
+            'valor_bruto' => $novoValorBruto,
+            'valor_liquido' => $novoValorLiquido,
+        ]);
+
+        $dadosInvestimentoCdiExtrato = [
+            'id_investimento' => $dadosRequest['id_investimento'],
+            'valor_operacao' => $dadosRequest['valor_operacao'],
+            'tipo_operacao' => $dadosRequest['tipo_operacao'],
+            'data_operacao' => $dadosRequest['data_operacao']
+        ];
+
+        return InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);
     }
 
     private function storeRendimento(object $dadosRequest): InvestimentoCdiExtrato
     {
-        $maxValorBruto = InvestimentoCdi::query()
-            ->where('id', $dadosRequest['id_investimento'])
-            ->value('valor_bruto');
+        $investimentoCdi = InvestimentoCdi::find($dadosRequest['id_investimento']);
 
-        $maxValorLiquido = InvestimentoCdi::query()
-            ->where('id', $dadosRequest['id_investimento'])
-            ->value('valor_liquido');
+        $valorBrutoAtual = $investimentoCdi->valor_bruto;
 
-        $rendaBruta = $dadosRequest['valor_bruto'] - $maxValorBruto;
+        $valorLiquidoAtual = $investimentoCdi->valor_liquido;
 
-        $rendaLiquida = $dadosRequest['valor_liquido'] - $maxValorLiquido;
+        if (
+            $valorBrutoAtual > $dadosRequest['valor_bruto']
+            || $valorLiquidoAtual > $dadosRequest['valor_liquido']
+        ) {
+            throw new InvalidArgumentException(
+                'O valor bruto ou liquido informado não pode ser menor que o valor atual.'
+            );
+        }
+
+        $investimentoCdi->update([
+            'valor_bruto' => $dadosRequest['valor_bruto'],
+            'valor_liquido' => $dadosRequest['valor_liquido'],
+        ]);
+
+        $rendaBruta = $dadosRequest['valor_bruto'] - $valorBrutoAtual;
+
+        $rendaLiquida = $dadosRequest['valor_liquido'] - $valorLiquidoAtual;
 
         $dadosInvestimentoCdiExtrato = [
             'id_investimento' => $dadosRequest['id_investimento'],
@@ -53,19 +86,39 @@ class InvestimentoCdiExtratoService
             'data_operacao' => $dadosRequest['data_operacao'],
         ];
 
-        $investimentoCdi = InvestimentoCdi::find($dadosRequest['id_investimento']);
-
-        $investimentoCdi->update([
-            'valor_bruto' => $dadosRequest['valor_bruto'],
-            'valor_liquido' => $dadosRequest['valor_liquido'],
-        ]);
-
         return InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);
     }
 
-    private function storeResgatado(object $dados)
+    private function storeResgatado(object $dadosRequest)
     {
-        dd('resgatado metodo');
+        $investimentoCdi = InvestimentoCdi::find($dadosRequest['id_investimento']);
+
+        $valorBruto = $investimentoCdi->valor_bruto;
+        $valorLiquido = $investimentoCdi->valor_liquido;
+
+        $novoValorBruto = $valorBruto - $dadosRequest['valor_operacao'];
+        $novoValorLiquido = $valorLiquido - $dadosRequest['valor_operacao'];
+
+        
+        if ($dadosRequest['valor_operacao'] > $valorLiquido) {
+            throw new InvalidArgumentException(
+                'O valor do resgate não pode ser maior que o valor liquido'
+            );
+        }
+
+        $investimentoCdi->update([
+            'valor_bruto' => $novoValorBruto,
+            'valor_liquido' => $novoValorLiquido
+        ]);
+
+        $dadosInvestimentoCdiExtrato = [
+            'id_investimento' => $dadosRequest['id_investimento'],
+            'valor_operacao' => $dadosRequest['valor_operacao'],
+            'tipo_operacao' => $dadosRequest['tipo_operacao'],
+            'data_operacao' => $dadosRequest['data_operacao']
+        ];
+
+        return InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);
     }
 
     private function formatarValorParaDecimal(string $valor)
