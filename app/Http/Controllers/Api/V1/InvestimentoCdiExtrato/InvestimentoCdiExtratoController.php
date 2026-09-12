@@ -8,6 +8,7 @@ use App\Policies\InvestimentoCdiExtratoPolicy;
 use App\Services\InvestimentoCdiExtrato\InvestimentoCdiExtratoService;
 use App\Traits\HttpResponsesTrait;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 class InvestimentoCdiExtratoController extends Controller
 {
@@ -25,13 +26,20 @@ class InvestimentoCdiExtratoController extends Controller
     ) {
         //autorizacao
 
-        $tarefa = $service->store($request);
+        try {
+            $tarefa = $service->store($request);
 
-        return $this->response(
-            'ok',
-            200,
-            $tarefa
-        );
+            return $this->response(
+                'ok',
+                200,
+                $tarefa
+            );
+        } catch (InvalidArgumentException $exception) {
+            return $this->error(
+                $exception->getMessage(),
+                422
+            );
+        }
     }
 
     /**
