@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'id_investimento',
     'valor_bruto',
     'valor_liquido',
+    'valor_operacao',
     'tipo_operacao',
     'renda_bruta',
     'renda_liquida',

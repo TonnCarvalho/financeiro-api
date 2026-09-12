@@ -11,9 +11,7 @@ use Override;
 
 class InvestimentoCdiExtratoStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
     public function authorize(): bool
     {
         return true;
@@ -27,9 +25,22 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_investimento' => ['required', 'integer'],
-            'valor_bruto' => ['required', 'decimal:2'],
-            'valor_liquido' => ['required', 'decimal:2'],
+            'id_investimento' => [
+                'required',
+                'integer'
+            ],
+            'valor_bruto' => [
+                'required_if:tipo_operacao,rendimento',
+                'decimal:2'
+            ],
+            'valor_liquido' => [
+                'required_if:tipo_operacao,rendimento',
+                'decimal:2'
+            ],
+            'valor_operacao' => [
+                'required_if:tipo_operacao,guardado',
+                'decimal:2'
+            ],
             'tipo_operacao' => [
                 'required',
                 Rule::enum(TipoOperacaoInvestimentoCdi::class)
@@ -44,19 +55,23 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
     #[Override]
     protected function prepareForValidation()
     {
-        $valorBruto = $this->formatarValorParaDecimal($this->valor_bruto);
-        $valorLiquido = $this->formatarValorParaDecimal($this->valor_liquido);
+        $valorBruto = $this->formatarValorParaDecimal($this->valor_bruto ?? null);
+        $valorLiquido = $this->formatarValorParaDecimal($this->valor_liquido ?? null);
+        $valorOperacao = $this->formatarValorParaDecimal($this->valor_operacao ?? null);
         $dataOperacao = $this->formatarData($this->data_operacao);
 
         $this->merge([
             'valor_bruto' => $valorBruto,
             'valor_liquido' => $valorLiquido,
+            'valor_operacao' => $valorOperacao,
             'data_operacao' => $dataOperacao,
         ]);
     }
 
-    private function formatarValorParaDecimal(string $valor)
+    private function formatarValorParaDecimal(?string $valor)
     {
+        if ($valor === null) return "";
+
         return Str::of($valor)
             ->replace('.', '')
             ->replace(',', '.')
