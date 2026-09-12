@@ -13,16 +13,24 @@ return new class extends Migration
     {
         Schema::create('investimento_cdi_extrato', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('id_investimento')
                 ->constrained('investimento_cdi')
                 ->cascadeOnDelete();
-            $table->decimal('valor_bruto', 8, 2);
-            $table->decimal('valor_liquido', 8, 2)->default(0);
+
             $table->enum('tipo_operacao', ['rendimento', 'guardado', 'resgatado']);
-            $table->decimal('renda_bruta', 8, 2)->default(0);
-            $table->decimal('renda_liquida', 8, 2)->default(0);
+            $table->decimal('valor_operacao', 15, 2)->nullable();
+
+            $table->decimal('valor_bruto', 15, 2)->nullable();
+            $table->decimal('valor_liquido', 15, 2)->nullable();
+
+            $table->decimal('renda_bruta', 15, 2)->nullable();
+            $table->decimal('renda_liquida', 15, 2)->nullable();
+
             $table->date('data_operacao');
             $table->timestamps();
+
+            $table->index(['id_investimento', 'tipo_operacao']);
         });
     }
 

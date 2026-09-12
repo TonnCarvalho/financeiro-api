@@ -18,6 +18,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->foreignId('id_banco')
                 ->constrained('bancos')
+                ->cascadeOnUpdate()
                 ->cascadeOnDelete();
             $table->string('nome', 100)->index();
             $table->decimal('valor_bruto', 8, 2);
