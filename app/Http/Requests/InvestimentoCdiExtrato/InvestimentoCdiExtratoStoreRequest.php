@@ -45,6 +45,11 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
                 'required',
                 Rule::enum(TipoOperacaoInvestimentoCdi::class)
             ],
+            'comprovante' => [
+                'nullable',
+                'mimes:jpg,jpeg,png,pdf',
+                'max:2048'
+            ],
             'data_operacao' => [
                 'required',
                 Rule::date()->todayOrBefore()

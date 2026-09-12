@@ -4,11 +4,14 @@ namespace App\Services\InvestimentoCdiExtrato;
 
 use App\Models\InvestimentoCdi;
 use App\Models\InvestimentoCdiExtrato;
+use App\Traits\Datas;
 use Illuminate\Support\Number;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class InvestimentoCdiExtratoService
 {
+    use Datas;
 
     public function store(object $request)
     {
@@ -25,8 +28,13 @@ class InvestimentoCdiExtratoService
         return $tarefa;
     }
 
-    private function storeGuardado(object $dadosRequest)
+    private function storeGuardado(object $dadosRequest): InvestimentoCdiExtrato
     {
+
+        if ($dadosRequest->comprovante != null) {
+            $this->arquivoComprovante($dadosRequest);
+        }
+
         $investimentoCdi = InvestimentoCdi::find($dadosRequest['id_investimento']);
 
         $valorBruto =  $investimentoCdi->valor_bruto;
@@ -89,8 +97,12 @@ class InvestimentoCdiExtratoService
         return InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);
     }
 
-    private function storeResgatado(object $dadosRequest)
+    private function storeResgatado(object $dadosRequest): InvestimentoCdiExtrato
     {
+        if ($dadosRequest->comprovante != null) {
+            $this->arquivoComprovante($dadosRequest);
+        }
+
         $investimentoCdi = InvestimentoCdi::find($dadosRequest['id_investimento']);
 
         $valorBruto = $investimentoCdi->valor_bruto;
@@ -99,7 +111,7 @@ class InvestimentoCdiExtratoService
         $novoValorBruto = $valorBruto - $dadosRequest['valor_operacao'];
         $novoValorLiquido = $valorLiquido - $dadosRequest['valor_operacao'];
 
-        
+
         if ($dadosRequest['valor_operacao'] > $valorLiquido) {
             throw new InvalidArgumentException(
                 'O valor do resgate não pode ser maior que o valor liquido'
@@ -121,6 +133,33 @@ class InvestimentoCdiExtratoService
         return InvestimentoCdiExtrato::create($dadosInvestimentoCdiExtrato);
     }
 
+    private function arquivoComprovante(object $dadosRequest): void
+    {
+
+        $arquivo = $dadosRequest->file('comprovante');
+
+        $extensao = Str::lower($arquivo->extension());
+
+        $data = explode('-', $dadosRequest['data_operacao']);
+
+        $mesArquivo = $data[1] . '-' . $this->nomeDomes($data[1]);
+
+        $anoArquivo = $data[0];
+
+        $path = 'comprovantes/investimento/' . $anoArquivo . '/' . $mesArquivo;
+
+        $operacao = $dadosRequest['tipo_operacao'];
+
+        $nomeArquivo  = $operacao . '-' . Str::uuid();
+
+        $nomeArquivoCompleto = $nomeArquivo . '.' . $extensao;
+
+        $arquivo->storeAs(
+            $path,
+            $nomeArquivoCompleto,
+            'public'
+        );
+    }
     private function formatarValorParaDecimal(string $valor)
     {
         return Number::format($valor, 2);
