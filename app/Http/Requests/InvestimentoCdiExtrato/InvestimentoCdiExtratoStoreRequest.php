@@ -2,17 +2,16 @@
 
 namespace App\Http\Requests\InvestimentoCdiExtrato;
 
-use App\Enum\TipoInvestimentoCdi;
-use Illuminate\Contracts\Validation\ValidationRule;
+use App\Enum\TipoOperacaoInvestimentoCdi;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Override;
 
 class InvestimentoCdiExtratoStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
     public function authorize(): bool
     {
         return true;
@@ -21,25 +20,76 @@ class InvestimentoCdiExtratoStoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array
      */
     public function rules(): array
     {
         return [
-            'valor_bruto' => ['required', 'decimal:2'],
-            'valor_liquido' => ['required', 'decimal:2'],
-            'tipo' => ['required', Rule::enum(TipoInvestimentoCdi::class)]
+            'id_investimento' => [
+                'required',
+                'integer'
+            ],
+            'valor_bruto' => [
+                'required_if:tipo_operacao,rendimento',
+                'decimal:2'
+            ],
+            'valor_liquido' => [
+                'required_if:tipo_operacao,rendimento',
+                'decimal:2'
+            ],
+            'valor_operacao' => [
+                'required_if:tipo_operacao,guardado',
+                'decimal:2'
+            ],
+            'tipo_operacao' => [
+                'required',
+                Rule::enum(TipoOperacaoInvestimentoCdi::class)
+            ],
+            'comprovante' => [
+                'nullable',
+                'mimes:jpg,jpeg,png,pdf',
+                'max:2048'
+            ],
+            'data_operacao' => [
+                'required',
+                Rule::date()->todayOrBefore()
+            ]
         ];
     }
 
     #[Override]
     protected function prepareForValidation()
     {
-        return parent::prepareForValidation();
+        $valorBruto = $this->formatarValorParaDecimal($this->valor_bruto ?? null);
+        $valorLiquido = $this->formatarValorParaDecimal($this->valor_liquido ?? null);
+        $valorOperacao = $this->formatarValorParaDecimal($this->valor_operacao ?? null);
+        $dataOperacao = $this->formatarData($this->data_operacao);
+
+        $this->merge([
+            'valor_bruto' => $valorBruto,
+            'valor_liquido' => $valorLiquido,
+            'valor_operacao' => $valorOperacao,
+            'data_operacao' => $dataOperacao,
+        ]);
     }
 
-    private function formatarValorParaDecimal()
+    private function formatarValorParaDecimal(?string $valor)
     {
-    
+        if ($valor === null) return "";
+
+        return Str::of($valor)
+            ->replace('.', '')
+            ->replace(',', '.')
+            ->toString();
+    }
+
+    private function formatarData(?string $data)
+    {
+        $dataFormatada = Carbon::createFromFormat(
+            'd/m/Y',
+            $data
+        )->format('Y-m-d');
+
+        return $dataFormatada;
     }
 }

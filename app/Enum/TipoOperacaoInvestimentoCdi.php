@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum TipoInvestimentoCdi: string
+enum TipoOperacaoInvestimentoCdi: string
 {
     case RENDIMENTO = 'rendimento';
     case GUARDADO = 'guardado';

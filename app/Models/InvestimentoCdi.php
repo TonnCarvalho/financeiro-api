@@ -13,9 +13,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'id_usuario',
     'id_banco',
     'nome',
-    'valor',
+    'valor_bruto',
+    'valor_liquido',
     'valor_cdi',
     'descricao',
+    'data_operacao',
 ])]
 
 class InvestimentoCdi extends Model
