@@ -5,6 +5,7 @@ namespace App\Services\InvestimentoCdiExtrato;
 use App\Models\InvestimentoCdi;
 use App\Models\InvestimentoCdiExtrato;
 use App\Traits\Datas;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -146,7 +147,7 @@ class InvestimentoCdiExtratoService
 
         $anoArquivo = $data[0];
 
-        $path = 'comprovantes/investimento/' . $anoArquivo . '/' . $mesArquivo;
+        $path = Auth::user()->id .'/comprovantes/investimento/' . $anoArquivo . '/' . $mesArquivo;
 
         $operacao = $dadosRequest['tipo_operacao'];
 
